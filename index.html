@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Choose Your Model In 2026</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #5D8AA8; /* Оновлений колір фону */
+            color: white;
+            min-height: 100vh;
+            overflow-x: hidden;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .gift-box {
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+            max-width: 280px;
+        }
+
+        .gift-box:active {
+            transform: scale(0.9);
+        }
+
+        .gift-item {
+            animation: popIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+            max-height: 180px; /* Збільшений розмір зображень */
+            object-fit: contain;
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0) translateY(50px); opacity: 0; }
+            100% { transform: scale(1) translateY(0); opacity: 1; }
+        }
+
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 24px;
+        }
+
+        .floating {
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+        }
+
+        #success-screen {
+            display: none;
+        }
+    </style>
+</head>
+<body class="flex flex-col items-center justify-start py-10">
+
+    <!-- Header -->
+    <h1 class="text-3xl md:text-5xl font-bold text-center mb-10 text-white drop-shadow-lg">
+        Choose Your Model In 2026
+    </h1>
+
+    <!-- Main Section -->
+    <div class="relative flex flex-col items-center z-10 w-full max-w-2xl">
+        <div id="box-container" class="relative mb-12">
+            <img 
+                id="main-gift-box"
+                src="https://www.transparentpng.com/download/gift/NJwetW-download-gift-png.png" 
+                alt="Gift Box" 
+                class="gift-box floating"
+                onclick="handleBoxClick()"
+            >
+        </div>
+
+        <!-- Gifts Gallery (Larger Items) -->
+        <div id="gifts-gallery" class="flex flex-wrap justify-center items-end gap-6 w-full px-4 min-h-[200px]">
+            <!-- Items will appear here -->
+        </div>
+    </div>
+
+    <!-- Delivery Form -->
+    <div id="delivery-form" class="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/50 hidden backdrop-blur-md">
+        <div class="glass-panel p-8 w-full max-w-md shadow-2xl">
+            <h2 class="text-2xl font-bold mb-6 text-center text-white">Delivery Details</h2>
+            <div class="space-y-5">
+                <div>
+                    <label class="block text-sm font-medium mb-1 text-white/90">Full Name</label>
+                    <input type="text" id="user-name" class="w-full bg-white/20 border border-white/30 rounded-xl px-4 py-3 text-white placeholder-white/50 outline-none focus:border-white transition-colors" placeholder="John Doe">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1 text-white/90">Shipping Address</label>
+                    <input type="text" id="user-address" class="w-full bg-white/20 border border-white/30 rounded-xl px-4 py-3 text-white placeholder-white/50 outline-none focus:border-white transition-colors" placeholder="123 Apple St, California">
+                </div>
+                <button onclick="submitForm()" class="w-full bg-white text-[#5D8AA8] font-bold py-4 rounded-xl shadow-lg transform active:scale-95 transition-all text-lg hover:bg-opacity-90">
+                    Confirm Order
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Screen -->
+    <div id="success-screen" class="fixed inset-0 z-[60] flex flex-col items-center justify-center bg-black/80 p-6 text-center">
+        <div class="glass-panel p-10 flex flex-col items-center">
+            <div class="w-24 h-24 bg-white rounded-full flex items-center justify-center mb-6 shadow-xl">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-14 w-14 text-[#5D8AA8]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+                </svg>
+            </div>
+            <h2 id="congrats-text" class="text-4xl font-bold mb-3"></h2>
+            <p class="text-xl text-white/90">Your order has been received!</p>
+            <p class="mt-4 text-white/70 font-medium">Expect it in 2026.</p>
+        </div>
+    </div>
+
+    <script>
+        let clickCount = 0;
+        const giftImages = [
+            "https://yabloki.ua/media/cache/sylius_shop_product_original/14/80/iphone-17-pro-256-gb-navy-now-1.png.webp",
+            "https://images.dailyobjects.com/marche/product-images/1101/dailyobjects-stride-2-0-clear-magsafe-phone-case-cover-for-iphone-17-images/Stride-2-0-Clear-MagSafe-Phone-Case-Cover-For-iPhone-17.png?tr=cm-pad_resize,v-3,w-412,h-490,dpr-2",
+            "https://png.pngtree.com/png-vector/20231104/ourmid/pngtree-apple-airpods-pro-png-image_10477533.png"
+        ];
+
+        function handleBoxClick() {
+            if (clickCount >= 3) return;
+
+            const box = document.getElementById('main-gift-box');
+            const gallery = document.getElementById('gifts-gallery');
+
+            // Feedback on click
+            box.classList.remove('floating');
+            box.style.transform = 'scale(1.1) rotate(3deg)';
+            
+            setTimeout(() => {
+                box.style.transform = '';
+                box.classList.add('floating');
+            }, 200);
+
+            // Create and style gift image
+            const img = document.createElement('img');
+            img.src = giftImages[clickCount];
+            // Increased width classes for larger mobile/desktop display
+            img.className = 'gift-item w-1/3 md:w-48 shadow-2xl drop-shadow-2xl';
+            img.onerror = () => { img.alt = "Gift " + (clickCount + 1); };
+            
+            gallery.appendChild(img);
+            clickCount++;
+
+            // Show form after 3 gifts
+            if (clickCount === 3) {
+                setTimeout(() => {
+                    document.getElementById('delivery-form').classList.remove('hidden');
+                }, 1200);
+            }
+        }
+
+        function submitForm() {
+            const name = document.getElementById('user-name').value;
+            const address = document.getElementById('user-address').value;
+
+            if (!name || !address) {
+                alert("Please fill in all fields.");
+                return;
+            }
+
+            document.getElementById('delivery-form').classList.add('hidden');
+            document.getElementById('success-screen').style.display = 'flex';
+            document.getElementById('congrats-text').innerText = `Congratulations, ${name}!`;
+        }
+    </script>
+</body>
+</html>
